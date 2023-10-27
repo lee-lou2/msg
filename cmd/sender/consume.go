@@ -9,7 +9,8 @@ import (
 	"time"
 )
 
-var Counter int32
+var count int32
+var LastCount int32
 var Msg chan *models.Message
 
 // Run 메시지 수집기 실행
@@ -23,12 +24,14 @@ func Run() {
 	}
 	// 초당 카운트 출력
 	go func() {
+		LastCount = 0
 		for {
 			<-time.NewTicker(1 * time.Second).C
-			cnt := atomic.LoadInt32(&Counter)
+			cnt := atomic.LoadInt32(&count)
 			if cnt != 0 {
+				LastCount = cnt
 				log.Println("⏱️ RPS : ", cnt)
-				atomic.StoreInt32(&Counter, 0)
+				atomic.StoreInt32(&count, 0)
 			}
 		}
 	}()

@@ -6,7 +6,6 @@ import (
 	"github.com/lee-lou2/msg/cmd/collector"
 	"github.com/lee-lou2/msg/cmd/sender"
 	"github.com/lee-lou2/msg/models"
-	"sync/atomic"
 )
 
 // sendHandler 메세지 전송
@@ -27,6 +26,7 @@ func sendHandler(c *fiber.Ctx) error {
 
 // countHandler 카운터 조회
 func countHandler(c *fiber.Ctx) error {
-	cnt := atomic.LoadInt32(&sender.Counter)
+	cnt := sender.LastCount
+	sender.LastCount = 0
 	return c.JSON(fiber.Map{"count": cnt})
 }

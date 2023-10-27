@@ -21,7 +21,7 @@ func distribute(m *models.Message, tickers map[int]*time.Ticker) error {
 	case models.SMS.Value():
 		<-tickers[models.SMS.Value()].C
 		if m.IsTest {
-			atomic.AddInt32(&Counter, 1)
+			atomic.AddInt32(&count, 1)
 		} else {
 			go func() {
 				// 리스트안에 리스트가 있는 변수
@@ -35,7 +35,7 @@ func distribute(m *models.Message, tickers map[int]*time.Ticker) error {
 	case models.Email.Value():
 		<-tickers[models.Email.Value()].C
 		if m.IsTest {
-			atomic.AddInt32(&Counter, 1)
+			atomic.AddInt32(&count, 1)
 		} else {
 			go func() {
 				// 리스트안에 리스트가 있는 변수
@@ -49,7 +49,7 @@ func distribute(m *models.Message, tickers map[int]*time.Ticker) error {
 	case models.Push.Value():
 		<-tickers[models.Push.Value()].C
 		if m.IsTest {
-			atomic.AddInt32(&Counter, 1)
+			atomic.AddInt32(&count, 1)
 		} else {
 			go func() {
 				// 리스트안에 리스트가 있는 변수
