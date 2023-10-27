@@ -20,7 +20,19 @@ func SendPush(users []*models.User, title, body string) (int, int, error) {
 		tokens[i] = u.FcmToken
 	}
 	if client == nil {
-		opt := option.WithCredentialsJSON([]byte(os.Getenv("FCM_SERVICE_ACCOUNT_KEY")))
+		serviceAccountKeyFilePath := "serviceAccountKey.json"
+		serviceAccountKey := os.Getenv("FCM_SERVICE_ACCOUNT_KEY")
+		if _, err := os.Stat(serviceAccountKeyFilePath); os.IsNotExist(err) {
+			f, err := os.Create(serviceAccountKeyFilePath)
+			if err != nil {
+				return 0, 0, err
+			}
+			defer f.Close()
+			if _, err := f.WriteString(serviceAccountKey); err != nil {
+				return 0, 0, err
+			}
+		}
+		opt := option.WithCredentialsFile(serviceAccountKeyFilePath)
 		app, err := firebase.NewApp(ctx, nil, opt)
 		if err != nil {
 			return 0, 0, err
