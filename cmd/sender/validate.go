@@ -8,10 +8,10 @@ import (
 )
 
 // validate 메시지 유효성 검사
-func validate(m *models.Message) ([][]string, error) {
+func validate(m *models.Message) ([][]*models.User, error) {
 	var maxUser int
 	var validateFunc func(u *models.User, m *models.Message) error
-	groups := make([][]string, 0)
+	groups := make([][]*models.User, 0)
 
 	// 전체 검증
 	if m.Content == "" {
@@ -42,10 +42,9 @@ func validate(m *models.Message) ([][]string, error) {
 		}
 		// 묶어서 그룹에 넣기
 		if len(groups) == 0 || len(groups[len(groups)-1]) == maxUser {
-			groups = append(groups, make([]string, 0))
-		} else {
-			groups[len(groups)-1] = append(groups[len(groups)-1], u.Phone)
+			groups = append(groups, make([]*models.User, 0))
 		}
+		groups[len(groups)-1] = append(groups[len(groups)-1], u)
 	}
 	return groups, nil
 }

@@ -3,6 +3,7 @@ package twilio
 import (
 	"fmt"
 	"github.com/kevinburke/twilio-go"
+	"github.com/lee-lou2/msg/models"
 	"strings"
 )
 
@@ -23,13 +24,14 @@ func ValidateSMSTwilioRequest(to string) error {
 }
 
 // SendSMSTwilio 트윌리오를 이용한 문자 발송
-func SendSMSTwilio(phones []string, message string, configs ...Configs) error {
+func SendSMSTwilio(users []*models.User, message string, configs ...Configs) error {
 	cfg, err := setConfigs(configs...)
 	if err != nil {
 		return err
 	}
 	// 여러명에게 전송
-	for _, to := range phones {
+	for _, u := range users {
+		to := u.Phone
 		to = strings.Replace(to, "-", "", -1)
 		to = strings.Replace(to, " ", "", -1)
 		if ValidateSMSTwilioRequest(to) != nil {

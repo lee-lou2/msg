@@ -1,19 +1,21 @@
 package email
 
 import (
+	"github.com/lee-lou2/msg/models"
 	"gopkg.in/gomail.v2"
 	"strconv"
 )
 
 // SendEmail 이메일 개별 전송
-func SendEmail(emails []string, subject, message string, configs ...Configs) error {
+func SendEmail(users []*models.User, subject, message string, configs ...Configs) error {
 	// 이메일 발송
 	cfg, err := setConfigs(configs...)
 	if err != nil {
 		return err
 	}
 
-	for _, email := range emails {
+	for _, u := range users {
+		email := u.Email
 		m := gomail.NewMessage()
 		m.SetHeader("From", cfg.User)
 		m.SetHeader("To", email)
