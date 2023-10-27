@@ -2,12 +2,15 @@ package firebase
 
 import (
 	"context"
+	"encoding/json"
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"fmt"
 	"github.com/lee-lou2/msg/models"
 	"google.golang.org/api/option"
+	"io/ioutil"
 	"os"
+	"strings"
 )
 
 var client *messaging.Client
@@ -21,15 +24,25 @@ func SendPush(users []*models.User, title, body string) (int, int, error) {
 	}
 	if client == nil {
 		serviceAccountKeyFilePath := "serviceAccountKey.json"
-		serviceAccountKey := os.Getenv("FCM_SERVICE_ACCOUNT_KEY")
+		serviceAccountKeyValue := os.Getenv("FCM_SERVICE_ACCOUNT_KEY")
+
+		// 파일이 이미 존재하는지 확인
 		if _, err := os.Stat(serviceAccountKeyFilePath); os.IsNotExist(err) {
-			f, err := os.Create(serviceAccountKeyFilePath)
+			// 파일이 존재하지 않으면 JSON 문자열을 파일에 저장
+			var jsonValue map[string]interface{}
+			err := json.NewDecoder(strings.NewReader(serviceAccountKeyValue)).Decode(&jsonValue)
 			if err != nil {
-				return 0, 0, err
+				panic(err) // 적절한 오류 처리를 추가하세요.
 			}
-			defer f.Close()
-			if _, err := f.WriteString(serviceAccountKey); err != nil {
-				return 0, 0, err
+
+			jsonData, err := json.MarshalIndent(jsonValue, "", "  ")
+			if err != nil {
+				panic(err) // 적절한 오류 처리를 추가하세요.
+			}
+
+			err = ioutil.WriteFile(serviceAccountKeyFilePath, jsonData, 0644)
+			if err != nil {
+				panic(err) // 적절한 오류 처리를 추가하세요.
 			}
 		}
 		opt := option.WithCredentialsFile(serviceAccountKeyFilePath)
